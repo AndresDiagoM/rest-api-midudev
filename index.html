@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Document</title>
+		<style>
+			article {
+				border: 1px solid #000;
+				margin-bottom: 20px;
+				padding: 20px;
+            }
+            img {
+                height: auto;
+                width: 320px;
+            }
+        </style>
+        <script type="module">
+            fetch("http://localhost:3000/movies")
+                .then((response) => response.json())
+                .then((data) => {
+                    // return a html article for each movie
+                    const movies = data.map((movie) => {
+                        return `
+                        <article>
+                            <h2>${movie.title}</h2>
+                            <p>${movie.year}</p>
+                            <p>${movie.director}</p>
+                            <img src="${movie.poster}" alt="${movie.title}">
+
+                            <button id="${movie.id}" >Eliminar</button>
+                        </article>
+                    `;
+                    }).join('');
+                    document.querySelector('main').innerHTML = movies;
+
+                    // add event listener to each button
+                    document.querySelectorAll('button').forEach((button, index) => {
+                        const id = button.id;
+                        button.addEventListener('click', () => {
+                            fetch(`http://localhost:3000/movies/${id}`, {
+                                method: 'DELETE'
+                            })
+                            .then((response) => {
+                                if (response.ok) {
+                                    button.parentElement.remove();
+                                }
+                            });
+                        });
+                    });
+                });
+        </script>
+	</head>
+	<body>
+        <main></main>
+	</body>
+</html>
